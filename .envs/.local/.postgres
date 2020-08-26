@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=cooli_express
+POSTGRES_USER=rTFtogKACQMMrLnUKlnTndPdnRALOlXz
+POSTGRES_PASSWORD=gLISVQD3mFSXpyXLcE7TAgzavv9EWcOfNofJUiPb3hEqnD3poXGpPD7e5ejxxicS
