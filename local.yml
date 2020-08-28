@@ -34,20 +34,20 @@ services:
     env_file:
       - ./.envs/.local/.postgres
 
-  docs:
-    image: cooli_express_local_docs
-    container_name: docs
-    build:
-      context: .
-      dockerfile: ./compose/local/docs/Dockerfile
-    env_file:
-      - ./.envs/.local/.django
-    volumes:
-      - ./docs:/docs
-      - ./config:/app/config
-      - ./cooli_express:/app/cooli_express
-    ports:
-      - "7000:7000"
+  # docs:
+  #   image: cooli_express_local_docs
+  #   container_name: docs
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/local/docs/Dockerfile
+  #   env_file:
+  #     - ./.envs/.local/.django
+  #   volumes:
+  #     - ./docs:/docs
+  #     - ./config:/app/config
+  #     - ./cooli_express:/app/cooli_express
+  #   ports:
+  #     - "7000:7000"
 
   redis:
     image: redis:5.0

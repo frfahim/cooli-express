@@ -11,6 +11,8 @@ APPS_DIR = ROOT_DIR / "cooli_express"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+# False when using docker
+READ_DOT_ENV_FILE = True
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
@@ -76,7 +78,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "cooli_express.users.apps.UsersConfig",
-    # Your stuff: custom apps go here
+    "cooli_express.common.apps.CommonConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
