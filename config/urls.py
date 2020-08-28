@@ -5,6 +5,24 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework import permissions
+
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Cooli Express API Endpoints",
+        default_version="v1",
+        description="API endpoints for Cooli Express backend application",
+        terms_of_service="",
+        contact=openapi.Contact(email="farhadurfahim@gmail.com"),
+        license=openapi.License(name="Closed Source License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -13,6 +31,14 @@ urlpatterns = [
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
+
+    # api docs
+    path(
+        "docs/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+
     # User management
     path("users/", include("cooli_express.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),

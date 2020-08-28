@@ -13,10 +13,10 @@ User = get_user_model()
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    lookup_field = "username"
+    lookup_field = "uuid"
 
     def get_queryset(self, *args, **kwargs):
-        return self.queryset.filter(id=self.request.user.id)
+        return self.queryset.filter(uuid=self.request.user.uuid)
 
     @action(detail=False, methods=["GET"])
     def me(self, request):
