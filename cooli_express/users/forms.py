@@ -18,6 +18,7 @@ class UserCreationForm(forms.UserCreationForm):
 
     class Meta(forms.UserCreationForm.Meta):
         model = User
+        exclude = ('username',)
 
     def clean_email(self):
         email = self.cleaned_data["email"]

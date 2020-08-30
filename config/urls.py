@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
@@ -24,6 +24,17 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+doc_patterns = ([
+    re_path(r'^docs(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path("", schema_view.with_ui('swagger', cache_timeout=0), name='api-docs'),
+], "docs")
+
+
+api_patterns = ([
+    path("docs/", include(doc_patterns, namespace="docs")),
+    path("users/", include("cooli_express.users.api.urls", namespace="users")),
+], "api")
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
@@ -32,26 +43,15 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
 
-    # api docs
     path(
-        "docs/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
+        f"api/{settings.API_VERSION}/",
+        include(api_patterns, namespace=settings.API_VERSION_NAMESPACE)
     ),
 
     # User management
-    path("users/", include("cooli_express.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
+    path("users/", include("cooli_express.users.urls", namespace="users_module")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# API URLS
-urlpatterns += [
-    # API base url
-    path("api/", include("config.api_router")),
-    # DRF auth token
-    path("auth-token/", obtain_auth_token),
-]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
