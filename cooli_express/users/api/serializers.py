@@ -1,10 +1,11 @@
+from cooli_express.customers.models import Customer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import fields
 from django.db.models import base
 from rest_framework import serializers, exceptions
-from dj_rest_auth.registration.serializers import RegisterSerializer
-from dj_rest_auth.serializers import LoginSerializer
+from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
+from dj_rest_auth.serializers import LoginSerializer as BaseLoginSerializer
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -16,13 +17,23 @@ from allauth.account.utils import setup_user_email
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
+class AuthUserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
+    name = serializers.CharField(required=True)
+
     class Meta:
         model = User
         fields = ["uuid", "username", "phone", "email", "name", "is_verified"]
 
 
-class RegisterSerializer(RegisterSerializer):
+class UserDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["uuid", "username", "phone", "email", "name", "is_verified"]
+
+
+class RegisterSerializer(BaseRegisterSerializer):
     username = serializers.CharField(required=False)
     phone = serializers.CharField(
         required=True,
@@ -45,7 +56,7 @@ class RegisterSerializer(RegisterSerializer):
     @staticmethod
     def generate_username():
         user = User.objects.last()
-        base_name = 'CE'
+        base_name = settings.USERNAME_PREFEX
         base_number = 1
         if user and user.username:
             base_number = user.username.strip(base_name)
@@ -63,6 +74,13 @@ class RegisterSerializer(RegisterSerializer):
         user.username = self.generate_username()
         user.save()
 
+    def create_customer(self, user):
+        Customer.objects.create(
+            user=user,
+            email=user.email,
+            phone=user.phone,
+        )
+
     def save(self, request):
         adapter = get_adapter()
         user = adapter.new_user(request)
@@ -71,10 +89,12 @@ class RegisterSerializer(RegisterSerializer):
         adapter.save_user(request, user, self, commit=False)
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
+        # TODO change this only for customer
+        self.create_customer(user)
         return user
 
 
-class LoginSerializer(LoginSerializer):
+class LoginSerializer(BaseLoginSerializer):
     username = serializers.CharField(required=False, allow_blank=True)
     email = serializers.EmailField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True)

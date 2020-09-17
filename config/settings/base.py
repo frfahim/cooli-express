@@ -83,6 +83,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "cooli_express.users.apps.UsersConfig",
     "cooli_express.common.apps.CommonConfig",
+    "cooli_express.customers.apps.CustomersConfig",
+    "cooli_express.orders.apps.OrdersConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -147,6 +149,15 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    "http://0.0.0.0",
+    "http://127.0.0.1",
+    "http://localhost",
 ]
 
 # STATIC
@@ -310,11 +321,20 @@ ACCOUNT_USERNAME_REQUIRED = False
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ),
+    # https://www.django-rest-framework.org/api-guide/renderers/
+    "DEFAULT_RENDERER_CLASSES": (
+        "cooli_express.common.renderers.APIJSONRenderer",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "cooli_express.common.paginations.CustomPageNumberPagination",
+    "PAGE_SIZE": 20,
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -337,9 +357,12 @@ REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'cooli_express.users.api.serializers.LoginSerializer',
     # 'JWT_SERIALIZER': 'cooli_express.users.api.serializers.',
     'JWT_TOKEN_CLAIMS_SERIALIZER': 'cooli_express.users.api.serializers.CustomTokenObtainPairSerializer',
-    'USER_DETAILS_SERIALIZER': 'cooli_express.users.api.serializers.UserSerializer',
+    'USER_DETAILS_SERIALIZER': 'cooli_express.users.api.serializers.AuthUserSerializer',
 }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'cooli_express.users.api.serializers.RegisterSerializer'
 }
+
+USERNAME_PREFEX = env.str("USERNAME_PREFEX", default="UN")
+ORDER_PREFEX = env.str("ORDER_PREFEX", default="ON")

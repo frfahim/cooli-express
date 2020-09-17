@@ -5,14 +5,14 @@ from cooli_express.users.models import User
 class UserLog(models.Model):
     created_by = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="%(class)s_created_by",
         null=True,
         blank=True,
     )
     updated_by = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="%(class)s_updated_by",
         null=True,
         blank=True,

@@ -33,6 +33,8 @@ doc_patterns = ([
 api_patterns = ([
     path("docs/", include(doc_patterns, namespace="docs")),
     path("users/", include("cooli_express.users.api.urls", namespace="users")),
+    path("customers/", include("cooli_express.customers.api.urls", namespace="customers")),
+    path("orders/", include("cooli_express.orders.urls", namespace="orders")),
 ], "api")
 
 urlpatterns = [
