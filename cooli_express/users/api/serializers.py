@@ -54,8 +54,8 @@ class RegisterSerializer(BaseRegisterSerializer):
         }
 
     @staticmethod
-    def generate_username():
-        user = User.objects.last()
+    def generate_username(user):
+        # user = User.objects.last()
         base_name = settings.USERNAME_PREFEX
         base_number = 1
         if user and user.username:
@@ -64,6 +64,8 @@ class RegisterSerializer(BaseRegisterSerializer):
                 base_number = int(base_number)
             else:
                 base_number = int(user.id)
+        if user and user.id:
+            base_number = user.id
         username = base_name + f"{base_number:05d}"
         return username
 
