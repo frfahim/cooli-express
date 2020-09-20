@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework import permissions
-
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
@@ -38,10 +38,12 @@ api_patterns = ([
 ], "api")
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
-    ),
+    # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    # path(
+    #     "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
+    # ),
+    path('', lambda request: redirect('admin/')),
+    path('about/', RedirectView.as_view(url='/')),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
 
@@ -80,3 +82,8 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+from .super_admin_site import  super_site
+urlpatterns += [
+    path('super-admin/', super_site.urls),
+]

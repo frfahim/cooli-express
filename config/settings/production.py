@@ -5,16 +5,19 @@ from .base import env
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="TrMayZv3iE1u21UcPGKT41d8BWRt9JiNC7h4clbVvtcNVXJmpEfTvZhZ0jLfbhQd")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 # ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["enxpress.com"])
 ALLOWED_HOSTS = ['*']
+DJANGO_SETTINGS_MODULE = "config.settings.production"
+# DJANGO_ALLOWED_HOSTS=["localhost", "0.0.0.0","127.0.0.1",be.en-xpress.com, app.en-xpress.com,128.199.88.75,128.199.177.100]
 
 # DATABASES
 # ------------------------------------------------------------------------------
-DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
+DATABASES["default"] = env.db("DATABASE_URL", default="postgres://enxp_user:enxp_ltd@localhost:5432/enxpress_ltd")  # noqa F405
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
+
 
 # CACHES
 # ------------------------------------------------------------------------------

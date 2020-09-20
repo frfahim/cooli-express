@@ -16,8 +16,12 @@ from cooli_express.common.models.base import NameBase, TimeLogBase
 
 class PickupCoverageDistrict(NameBase):
 
+    class Meta:
+        verbose_name = "Pickup District"
+        verbose_name_plural = "Pickup Districts"
+
     def __str__(self) -> str:
-        return f"{self.pk} - {self.name}"
+        return f"{self.name}"
 
 
 class PickupCoverageZone(NameBase):
@@ -28,8 +32,12 @@ class PickupCoverageZone(NameBase):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        verbose_name = "Pickup Zone"
+        verbose_name_plural = "Pickup Zones"
+
     def __str__(self) -> str:
-        return f"{self.pk} - {self.name}"
+        return f"{self.name}"
 
 
 class Order(TimeLogBase, UserLog):
@@ -88,7 +96,7 @@ class Order(TimeLogBase, UserLog):
         max_digits=12,
         decimal_places=6,
         default=Decimal("0.00"),
-        verbose_name=_("Amount"),
+        verbose_name=_("Cash Collection Amount"),
         help_text=_("Cash Collection Amount"),
     )
     amount = models.DecimalField(
@@ -152,12 +160,16 @@ class Order(TimeLogBase, UserLog):
         choices=OrderStatus.choices,
         default=OrderStatus.PENDING
     )
-    is_individual = models.BooleanField(default=False)
+    is_individual = models.BooleanField(
+        default=False,
+        verbose_name='Is individual Order'
+    )
     pickedup_by = models.ForeignKey(
         "customers.Customer",
         related_name='orders_pickedup_by',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True,
     )
     pickedup_at = models.DateTimeField(
         null=True,
@@ -168,13 +180,18 @@ class Order(TimeLogBase, UserLog):
         "customers.Customer",
         related_name='orders_deliverd_by',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True,
     )
     delivered_at = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Delivered time"),
     )
+
+    # def individual_order(self):
+    #     return 'YES' if self.is_available else 'NO'
+
 
     def __str__(self) -> str:
         return f"{self.pk} - Requestor: {self.requestor_name},  Reciever: {self.receiver_name}"

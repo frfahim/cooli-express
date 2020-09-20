@@ -106,13 +106,13 @@ class LoginSerializer(BaseLoginSerializer):
     def _validate_username_email_phone(self, username, email, phone, password):
         user = None
 
-        if email and password:
-            user = self.authenticate(email=email, password=password)
-        elif username and password:
+        if not user:
+            user = self.authenticate(email=username, password=password)
+        if not user:
             user = self.authenticate(username=username, password=password)
-        elif phone and password:
-            user = self.authenticate(phone=phone, password=password)
-        else:
+        if not user:
+            user = self.authenticate(phone=username, password=password)
+        if not user:
             msg = _('Must include either "username" or "email" or "phone and "password".')
             raise exceptions.ValidationError(msg)
 
