@@ -71,7 +71,7 @@ class RegisterSerializer(BaseRegisterSerializer):
         data = self.cleaned_data
         user.phone = data.get('phone')
         user.name = data.get('name')
-        user.username = self.generate_username()
+        # user.username = self.generate_username()
         user.save()
 
     def create_customer(self, user):
