@@ -1,8 +1,6 @@
-from cooli_express.customers.models import Customer
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db.models import fields
-from django.db.models import base
+from django.db import transaction
 from rest_framework import serializers, exceptions
 from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer as BaseLoginSerializer
@@ -12,6 +10,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
+
+from cooli_express.customers.models import Customer, PaymentInfo
 
 
 User = get_user_model()
@@ -92,7 +92,38 @@ class RegisterSerializer(BaseRegisterSerializer):
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
         # TODO change this only for customer
-        self.create_customer(user)
+        # self.create_customer(user)
+        return user
+
+
+class ExtendedRegisterSerializer(RegisterSerializer):
+
+    def create_customer(self, user, customer_data):
+        return Customer.objects.create(
+            user=user,
+            email=user.email,
+            **customer_data,
+        )
+
+    def create_payment(self, customer, payment_data):
+        PaymentInfo.objects.create(
+            customer=customer,
+            **payment_data,
+        )
+
+    @transaction.atomic
+    def save(self, request):
+        adapter = get_adapter()
+        user = adapter.new_user(request)
+        customer = request.data.pop('customer')
+        payment = request.data.pop('payment')
+        self.cleaned_data = self.get_cleaned_data()
+        # commit false so user will not save here
+        adapter.save_user(request, user, self, commit=False)
+        self.custom_signup(request, user)
+        setup_user_email(request, user, [])
+        customer = self.create_customer(user, customer)
+        self.create_payment(customer, payment)
         return user
 
 

@@ -365,7 +365,7 @@ REST_AUTH_SERIALIZERS = {
 }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'cooli_express.users.api.serializers.RegisterSerializer'
+    'REGISTER_SERIALIZER': 'cooli_express.users.api.serializers.ExtendedRegisterSerializer'
 }
 
 USERNAME_PREFEX = env.str("USERNAME_PREFEX", default="UN")
