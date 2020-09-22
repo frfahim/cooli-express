@@ -16,7 +16,7 @@ class ZonesListCreateAPIView(ListCreateAPIView):
         return [permission() for permission in self.permission_classes]
 
     serializer_class = ZoneSerializers
-    queryset = PickupCoverageZone.objects.all()
+    queryset = PickupCoverageZone.objects.filter(is_available=True)
 
     def perform_create(self, serializer):
         serializer.save()
@@ -40,7 +40,7 @@ class OrderListCreateApiView(ListCreateAPIView):
         queryset = Order.objects.filter(
             requestor__user_id=self.request.user.id,
             is_available=True,
-        )
+        ).order_by('-id')
         return queryset
 
     def perform_create(self, serializer):
