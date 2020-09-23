@@ -1,5 +1,4 @@
 from os import write
-from cooli_express.orders.serializers import ZoneSerializers
 from cooli_express.users.api.serializers import UserDetailsSerializer
 from rest_framework import serializers
 
@@ -83,6 +82,7 @@ class BankInfoSerializerClass(serializers.ModelSerializer):
 
 
 class MeCustomerSerializer(serializers.ModelSerializer):
+    from cooli_express.orders.serializers import ZoneSerializers
     user = UserDetailsSerializer()
     payment = BankInfoSerializerClass(many=True)
     zone = ZoneSerializers()

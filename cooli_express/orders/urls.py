@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    ZonesListCreateAPIView,
+    OrderDetailAPIView, ZonesListCreateAPIView,
     OrderListCreateApiView
 )
 
@@ -12,6 +12,11 @@ urlpatterns = [
         "",
         OrderListCreateApiView.as_view(),
         name="order-list-create"
+    ),
+    path(
+        "<uuid:uuid>/",
+        OrderDetailAPIView.as_view(),
+        name="order-details"
     ),
     path(
         "zones/",

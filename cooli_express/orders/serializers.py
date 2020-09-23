@@ -30,8 +30,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'invoice_number',
             'invoice_value',
             'cash_amount',
-            'amount',
-            'total_amount',
             'receiver_name',
             'receiver_phone',
             'receiver_zone',
@@ -46,6 +44,7 @@ class OrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'uuid',
             'reference',
             'status',
             'requestor_name',
@@ -55,13 +54,40 @@ class OrderListSerializer(serializers.ModelSerializer):
             # 'invoice_number',
             # 'invoice_value',
             'cash_amount',
-            'amount',
-            'total_amount',
             'receiver_name',
             'receiver_phone',
             # 'receiver_zone',
             'receiver_address',
             # 'delivery_date',
             # 'delivery_note',
+        )
+
+
+class OrderDetailsSerializer(serializers.ModelSerializer):
+    from cooli_express.customers.api.serializers import CustomerInfoSerializer
+    requestor = CustomerInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            'uuid',
+            'reference',
+            'status',
+            'requestor',
+            'requestor_name',
+            'requestor_phone',
+            'requestor_zone',
+            'requestor_address',
+            'pickup_date',
+            'product_type',
+            'invoice_number',
+            'invoice_value',
+            'cash_amount',
+            'receiver_name',
+            'receiver_phone',
+            'receiver_zone',
+            'receiver_address',
+            'delivery_date',
+            'delivery_note',
         )
 

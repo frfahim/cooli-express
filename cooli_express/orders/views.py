@@ -1,9 +1,9 @@
 from django.http import request
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from cooli_express.orders.models import Order, PickupCoverageZone
-from cooli_express.orders.serializers import OrderCreateSerializer, OrderListSerializer, ZoneSerializers
+from cooli_express.orders.serializers import OrderCreateSerializer, OrderDetailsSerializer, OrderListSerializer, ZoneSerializers
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 
 class ZonesListCreateAPIView(ListCreateAPIView):
@@ -58,7 +58,15 @@ class OrderListCreateApiView(ListCreateAPIView):
         serializer.save(**kwargs)
 
 
-class OrderDetailAPIView(RetrieveUpdateAPIView):
+class OrderDetailAPIView(RetrieveUpdateDestroyAPIView):
 
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
+    serializer_class = OrderDetailsSerializer
+
+    def get_queryset(self):
+        queryset = Order.objects.filter(
+            requestor__user_id=self.request.user.id,
+            is_available=True,
+        )
+        return queryset
