@@ -3,11 +3,15 @@ from decimal import Decimal
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+from model_utils import FieldTracker
+from django_currentuser.db.models import CurrentUserField
 from cooli_express.common.models.user_log import UserLog
 
 from cooli_express.common.models.base import NameBase, TimeLogBase
 
 
+User = get_user_model()
 # class ProductType(NameBase):
 
 #     def __str__(self) -> str:
@@ -81,6 +85,23 @@ class Order(TimeLogBase, UserLog):
     description = models.CharField(
         max_length=255,
         blank=True
+    )
+    service_name = models.CharField(
+        max_length=255,
+        verbose_name=_("Service Name"),
+        blank=True,
+    )
+    product_weight = models.DecimalField(
+        max_digits=5,
+        decimal_places=4,
+        default=Decimal("1.00"),
+        verbose_name=_("Product Weight"),
+    )
+    service_charge = models.DecimalField(
+        max_digits=12,
+        decimal_places=6,
+        default=Decimal("0.00"),
+        verbose_name=_("Service Charge"),
     )
     invoice_number = models.CharField(
         max_length=150,
@@ -165,7 +186,7 @@ class Order(TimeLogBase, UserLog):
         verbose_name='Is individual Order'
     )
     pickedup_by = models.ForeignKey(
-        "customers.Customer",
+        User,
         related_name='orders_pickedup_by',
         on_delete=models.SET_NULL,
         null=True,
@@ -177,7 +198,7 @@ class Order(TimeLogBase, UserLog):
         verbose_name=_("Picked up time"),
     )
     deliverd_by = models.ForeignKey(
-        "customers.Customer",
+        User,
         related_name='orders_deliverd_by',
         on_delete=models.SET_NULL,
         null=True,
@@ -188,6 +209,7 @@ class Order(TimeLogBase, UserLog):
         blank=True,
         verbose_name=_("Delivered time"),
     )
+    field_tracker = FieldTracker()
 
     # def individual_order(self):
     #     return 'YES' if self.is_available else 'NO'
@@ -195,3 +217,31 @@ class Order(TimeLogBase, UserLog):
 
     def __str__(self) -> str:
         return f"{self.pk} - Requestor: {self.requestor_name},  Reciever: {self.receiver_name}"
+
+
+class OrderTracker(TimeLogBase):
+    created_by = CurrentUserField()
+    status = models.CharField(
+        max_length=80,
+        choices=OrderStatus.choices,
+    )
+    pre_status = models.CharField(
+        max_length=80,
+        choices=OrderStatus.choices,
+        verbose_name=_("Previous Status"),
+    )
+    assigned = models.ForeignKey(
+        User,
+        related_name="tracker",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    order = models.ForeignKey(
+        Order,
+        related_name="tracker",
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self) -> str:
+        return f"{self.pk}"

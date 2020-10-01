@@ -36,6 +36,9 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'receiver_address',
             'delivery_date',
             'delivery_note',
+            'service_name',
+            'product_weight',
+            'service_charge',
         )
 
 
@@ -89,5 +92,8 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
             'receiver_address',
             'delivery_date',
             'delivery_note',
+            'service_name',
+            'product_weight',
+            'service_charge',
         )
 

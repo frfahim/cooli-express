@@ -30,6 +30,10 @@ class UserAdmin(auth_admin.UserAdmin):
     list_display = ["username", "email", "name", "phone",]
     search_fields = ["name", "phone", 'phone', 'username']
     ordering = ["-id"]
+    list_filter = ('is_staff', 'is_active', 'groups')
+    search_fields = ('username', 'name', 'phone', 'email')
+    view_on_site = False
+    autocomplete_fields = ['groups']
 
     def get_fieldsets(self, request, obj=None):
         if not obj:

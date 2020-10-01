@@ -151,6 +151,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_currentuser.middleware.ThreadLocalUserMiddleware", # store current user
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -432,7 +433,7 @@ JAZZMIN_SETTINGS = {
     'show_sidebar': True,
 
     # Whether to aut expand the menu
-    'navigation_expanded': True,
+    'navigation_expanded': False,
 
     # Hide these apps when generating side menu e.g (auth)
     'hide_apps': [
@@ -497,7 +498,7 @@ JAZZMIN_SETTINGS = {
     "changeform_format": "horizontal_tabs",
     # override change forms on a per modeladmin basis
     "changeform_format_overrides": {
-        "orders.order": "collapsible",
+        # "orders.order": "collapsible",
         "auth.user": "collapsible",
         "auth.group": "vertical_tabs",
     },

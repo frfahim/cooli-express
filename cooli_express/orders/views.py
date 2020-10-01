@@ -55,6 +55,7 @@ class OrderListCreateApiView(ListCreateAPIView):
 
         if not user:
             kwargs['is_individual'] = True
+        # TODO add service charge calculation / validation
         serializer.save(**kwargs)
 
 

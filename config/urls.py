@@ -43,7 +43,7 @@ urlpatterns = [
     #     "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     # ),
     path('', lambda request: redirect('admin/'), name="home"),
-    path('about/', RedirectView.as_view(url='/')),
+    path('about/', RedirectView.as_view(url='/'), name="about"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
 

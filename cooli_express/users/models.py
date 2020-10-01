@@ -26,7 +26,7 @@ class User(AbstractUser, Base):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.email} - {self.name}"
+        return f"{self.name} - {self.phone}"
 
     def get_absolute_url(self):
         """Get url for user's detail view.

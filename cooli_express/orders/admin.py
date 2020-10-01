@@ -1,7 +1,47 @@
 from django.contrib import admin
 from django.http import request
 
-from .models import Order, PickupCoverageDistrict, PickupCoverageZone
+from .models import (
+    Order,
+    OrderTracker,
+    PickupCoverageDistrict,
+    PickupCoverageZone,
+)
+
+
+class OrderTrackerInline(admin.TabularInline):
+    model = OrderTracker
+    verbose_name = 'Order Status'
+    verbose_name_plural = 'Orders Status'
+    extra = 1
+    fields = ['status', 'assigned', 'changed_by']
+    readonly_fields = ['changed_by']
+    autocomplete_fields = ['assigned']
+
+    def changed_by(self, obj):
+        return obj.created_by.name
+
+    # def has_add_permission(self, request, obj=None):
+    #     return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Override the formset function in order to remove the add and change buttons beside the foreign key pull-down
+        menus in the inline.
+        """
+        formset = super(OrderTrackerInline, self).get_formset(request, obj, **kwargs)
+        form = formset.form
+        widget = form.base_fields['assigned'].widget
+        widget.can_add_related = False
+        widget.can_change_related = False
+        widget.can_delete_related = False
+        return formset
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -61,6 +101,9 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': (
                 'individual_order',
                 'reference',
+                'service_name',
+                'product_weight',
+                'service_charge',
                 'status',
                 'pickedup_by',
                 'pickedup_at',
@@ -107,6 +150,9 @@ class OrderAdmin(admin.ModelAdmin):
     edit_readonly_fields = [
         'individual_order',
         'reference',
+        'service_name',
+        'product_weight',
+        'service_charge',
         'requestor',
         'requestor_name',
         'requestor_phone',
@@ -131,6 +177,12 @@ class OrderAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ['reference', 'requestor_phone', 'receiver_phone']
+
+    inlines = [
+        OrderTrackerInline,
+    ]
+    view_on_site = False
+    autocomplete_fields = ['pickedup_by', 'deliverd_by']
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

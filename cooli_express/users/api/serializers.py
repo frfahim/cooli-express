@@ -146,7 +146,10 @@ class LoginSerializer(BaseLoginSerializer):
         if not user:
             user = self.authenticate(phone=username, password=password)
         if not user:
-            msg = _('Must include either "username" or "email" or "phone and "password".')
+            if not username or not password:
+                msg = _('Must include either email or phone or userid and password.')
+            else:
+                msg = _('Wrong credential')
             raise exceptions.ValidationError(msg)
 
         return user
