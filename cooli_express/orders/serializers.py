@@ -43,6 +43,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(serializers.ModelSerializer):
+    status_display = serializers.CharField(source='get_status_display')
 
     class Meta:
         model = Order
@@ -50,6 +51,7 @@ class OrderListSerializer(serializers.ModelSerializer):
             'uuid',
             'reference',
             'status',
+            'status_display',
             'requestor_name',
             'requestor_phone',
             'pickup_date',
